@@ -48,3 +48,9 @@ Route::post('/delivery', [DeliveryController::class, 'store'])
 
 Route::get('/delivery/{id}', [DeliveryController::class, 'show'])
     ->middleware('auth:sanctum');
+
+Route::put('/delivery/{id}', [DeliveryController::class, 'update'])
+    ->middleware('auth:sanctum');
+
+Route::delete('/delivery/{id}', [DeliveryController::class, 'destroy'])
+    ->middleware('auth:sanctum');

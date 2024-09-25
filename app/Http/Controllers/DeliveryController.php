@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProductResource;
-use App\Models\Product;
+use App\Http\Resources\DeliveryResource;
+use App\Models\Delivery;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class DeliveryController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,10 +16,10 @@ class ProductController extends Controller
      */
     public function index(): JsonResponse
     {
-        $products = Product::all();
+        $delivery = Delivery::all();
         return $this->sendResponse(
-            ProductResource::collection($products),
-            'Products retrieved successfully.'
+            DeliveryResource::collection($delivery),
+            'Deliveries retrieved successfully.'
         );
     }
 
@@ -33,13 +33,14 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string'],
+            'quantity' => ['required', 'integer', 'min:1'],
         ]);
 
-        $product = Product::create($request->all());
+        $delivery = Delivery::create($request->all());
 
         return $this->sendResponse(
-            new ProductResource($product),
-            'Product created successfully.'
+            new DeliveryResource($delivery),
+            'Delivery created successfully.'
         );
     }
 
@@ -51,13 +52,13 @@ class ProductController extends Controller
      */
     public function show(int $id): JsonResponse
     {
-        $product = Product::find($id);
-        if (is_null($product)) {
-            return $this->sendError('Product not found.');
+        $delivery = Delivery::find($id);
+        if (is_null($delivery)) {
+            return $this->sendError('Delivery not found.');
         }
         return $this->sendResponse(
-            new ProductResource($product),
-            'Product retrieved successfully.'
+            new DeliveryResource($delivery),
+            'Delivery retrieved successfully.'
         );
     }
 
@@ -70,23 +71,28 @@ class ProductController extends Controller
      */
     public function update(Request $request, int $id): JsonResponse
     {
-        $product = Product::find($id);
-        if (is_null($product)) {
-            return $this->sendError('Product not found.');
+        $delivery = Delivery::find($id);
+        if (is_null($delivery)) {
+            return $this->sendError('Delivery not found.');
         }
 
         $request->validate([
             'name' => ['string'],
+            'quantity' => ['integer', 'min:1'],
         ]);
 
         if ($request->has('name')) {
-            $product->name = $request['name'];
+            $delivery->name = $request['name'];
         }
 
-        $product->save();
+        if ($request->has('quantity')) {
+            $delivery->quantity = $request['quantity'];
+        }
+
+        $delivery->save();
         return $this->sendResponse(
-            new ProductResource($product),
-            'Product updated successfully.'
+            new DeliveryResource($delivery),
+            'Delivery updated successfully.'
         );
     }
 
@@ -98,12 +104,12 @@ class ProductController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $product = Product::find($id);
-        if (is_null($product)) {
-            return $this->sendError('Product not found.');
+        $delivery = Delivery::find($id);
+        if (is_null($delivery)) {
+            return $this->sendError('Delivery not found.');
         }
 
-        $product->delete();
-        return $this->sendResponse($product, 'Product deleted successfully.');
+        $delivery->delete();
+        return $this->sendResponse($delivery, 'Delivery deleted successfully.');
     }
 }
