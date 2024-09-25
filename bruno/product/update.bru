@@ -1,0 +1,21 @@
+meta {
+  name: update
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{API_URL}}/product/8
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{TOKEN}}
+}
+
+body:json {
+  {
+    "name": "product2"
+  }
+}

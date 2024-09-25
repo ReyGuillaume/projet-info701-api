@@ -1,0 +1,21 @@
+meta {
+  name: destroy
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{API_URL}}/product/8
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{TOKEN}}
+}
+
+body:json {
+  {
+    "name": "product renamed"
+  }
+}
