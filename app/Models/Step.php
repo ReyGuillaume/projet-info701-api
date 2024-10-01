@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Delivery extends Model
+class Step extends Model
 {
     use HasFactory;
 
@@ -16,11 +16,7 @@ class Delivery extends Model
      */
     protected $fillable = [
         'title',
-        'quantity',
-        'status',
-        'client_contact',
-        'id_product',
-        'id_site_presence',
-        'id_site_destination',
+        'previous_step',
+        'next_step',
     ];
 }
