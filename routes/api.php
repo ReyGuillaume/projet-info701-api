@@ -22,7 +22,7 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->name('login');
 
 // Product
-
+/*
 Route::get('/product', [ProductController::class, 'index'])
     ->middleware('auth:sanctum');
 
@@ -37,7 +37,7 @@ Route::put('/product/{id}', [ProductController::class, 'update'])
 
 Route::delete('/product/{id}', [ProductController::class, 'destroy'])
     ->middleware('auth:sanctum');
-
+*/
 // Delivery
 
 Route::get('/delivery', [DeliveryController::class, 'index'])
