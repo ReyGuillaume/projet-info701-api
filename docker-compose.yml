@@ -1,55 +1,55 @@
-version: '3.3'
+version: '3.8'
+
 services:
-    app:
+    laravel:
         build:
             context: .
             dockerfile: Dockerfile
-        image: laravel-app
-        container_name: laravel-app
+        container_name: laravel_app
         restart: unless-stopped
-        tty: true
         environment:
-            SERVICE_NAME: app
-            SERVICE_TAGS: dev
-        working_dir: /var/www
+            - DB_HOST=mysql
+            - DB_PORT=3306
+            - DB_DATABASE=laravel
+            - DB_USERNAME=root
+            - DB_PASSWORD=root
         volumes:
-            - .:/var/www
-            - ./docker-compose/php/local.ini:/usr/local/etc/php/conf.d/local.ini
-        networks:
-            - app-network
-
-    webserver:
-        image: nginx:alpine
-        container_name: nginx-webserver
-        restart: unless-stopped
+            - .:/var/www/html
         ports:
-            - "8080:80"
-        volumes:
-            - .:/var/www
-            - ./docker-compose/nginx:/etc/nginx/conf.d/
+            - "9000:9000"
         networks:
-            - app-network
+            - laravel
 
-    db:
-        image: mysql:5.7
-        container_name: mysql
+    mysql:
+        image: mysql:8
+        container_name: laravel_mysql
         restart: unless-stopped
         environment:
-            MYSQL_DATABASE: laravel
             MYSQL_ROOT_PASSWORD: root
-            MYSQL_PASSWORD: root
+            MYSQL_DATABASE: laravel
             MYSQL_USER: root
+            MYSQL_PASSWORD: root
+        volumes:
+            - mysql_data:/var/lib/mysql
         ports:
             - "3306:3306"
-        volumes:
-            - dbdata:/var/lib/mysql
         networks:
-            - app-network
+            - laravel
+
+    nginx:
+        image: nginx:alpine
+        container_name: laravel_nginx
+        restart: unless-stopped
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+            - .:/var/www/html
+        ports:
+            - "80:80"
+        networks:
+            - laravel
 
 networks:
-    app-network:
-        driver: bridge
+    laravel:
 
 volumes:
-    dbdata:
-        driver: local
+    mysql_data:

@@ -1,46 +1,35 @@
 # Use the official PHP image as a base image
 FROM php:8.1-fpm
 
-# Set working directory
-WORKDIR /var/www
-
-# Install system dependencies
+# Installer les dépendances système
 RUN apt-get update && apt-get install -y \
-    build-essential \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    locales \
-    zip \
-    jpegoptim optipng pngquant gifsicle \
-    vim \
-    unzip \
-    git \
-    curl \
     libzip-dev \
-    libpq-dev \
-    libonig-dev \
+    zip \
+    unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd
+    && docker-php-ext-install gd zip pdo pdo_mysql
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring zip exif pcntl
+# Installer Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+# Copier les fichiers du projet
+COPY . /var/www/html
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Définir le répertoire de travail
+WORKDIR /var/www/html
 
-# Copy the existing application directory contents to the working directory
-COPY . /var/www
+# Installer les dépendances du projet
+RUN composer install --optimize-autoloader --no-dev
 
-# Copy the existing application directory permissions to the working directory
-COPY --chown=www-data:www-data . /var/www
+# Donner les bonnes permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage
 
-# Change current user to www
-USER www-data
-
-# Expose port 9000 and start php-fpm server
+# Exposer le port 9000
 EXPOSE 9000
+
+# Lancer PHP-FPM
 CMD ["php-fpm"]
